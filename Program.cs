@@ -9,13 +9,13 @@
 
         if (!int.TryParse(input, out int num))
         {
-            Console.WriteLine("Error: not a valid integer!");
+            Console.WriteLine("Error, an integer is required");
             return;
         }
 
         if (num < 1 || num > 100)
         {
-            Console.WriteLine("Error: number must be between 1 and 100!");
+            Console.WriteLine("Error, 1 and 100!");
             return;
         }
 
