@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 class Program
 {
@@ -7,91 +6,212 @@ class Program
     {
         ////Task 1
 
-        //int[,] matrix = new int[5, 5];
-        //Random rnd = new Random();
+        //Console.Write("Enter the side size: ");
+        //int size = int.Parse(Console.ReadLine() ?? "5");
 
-        //Console.WriteLine("Massif:");
-        //for (int i = 0; i < 5; i++)
+        //char symbol;
+
+        //while (true)
         //{
-        //    for (int j = 0; j < 5; j++)
+        //    Console.Write("Enter the symbol: ");
+        //    string input = Console.ReadLine() ?? "";
+
+        //    if (input.Length == 1)
         //    {
-        //        matrix[i, j] = rnd.Next(-100, 101);
-        //        Console.Write($"{matrix[i, j],5}");
+        //        symbol = input[0];
+        //        break;
         //    }
-        //    Console.WriteLine();
-        //}
-
-        //int minVal = matrix[0, 0], maxVal = matrix[0, 0];
-        //int minRow = 0, minCol = 0, maxRow = 0, maxCol = 0;
-
-        //for (int i = 0; i < 5; i++)
-        //{
-        //    for (int j = 0; j < 5; j++)
+        //    else
         //    {
-        //        if (matrix[i, j] < minVal)
-        //        {
-        //            minVal = matrix[i, j];
-        //            minRow = i; minCol = j;
-        //        }
-        //        if (matrix[i, j] > maxVal)
-        //        {
-        //            maxVal = matrix[i, j];
-        //            maxRow = i; maxCol = j;
-        //        }
+        //        Console.WriteLine("Error .");
         //    }
         //}
 
-        //int minIndex = minRow * 5 + minCol;
-        //int maxIndex = maxRow * 5 + maxCol;
+        //Console.WriteLine();
+        //DrawSquare(size, symbol);
 
-        //int left = Math.Min(minIndex, maxIndex);
-        //int right = Math.Max(minIndex, maxIndex);
+        //Task 4
 
-        //long sum = 0;
-        //for (int k = left + 1; k < right; k++)
-        //{
-        //    int row = k / 5;
-        //    int col = k % 5;
-        //    sum += matrix[row, col];
-        //}
+        //Console.WriteLine(" Input from the console ");
+        //Website site1 = new Website();
+        //site1.Input();
 
-        //Console.WriteLine($"\nMini: {minVal} on position [{minRow},{minCol}]");
-        //Console.WriteLine($"Max: {maxVal} on position [{maxRow},{maxCol}]");
+        //Console.WriteLine("\n Site data 1 ");
+        //site1.Print();
 
-        //if (right - left <= 1)
-        //    Console.WriteLine("\nThere are no elements between the min and max..");
-        //else
-        //    Console.WriteLine($"\nSum of elements between min and max: {sum}");
+        //Website site2 = new Website(
+        //    "GitHub",
+        //    "https://github.com",
+        //    "Developer platform",
+        //    "140.82.121.4"
+        //);
 
-        ////Task 2
+        //Console.WriteLine("\n Site data 2 ");
+        //site2.Print();
 
-        Console.Write("Enter the text: ");
-        string text = Console.ReadLine() ?? "";
+        //site2.SetName("GitHub (updated)");
+        //site2.SetIpAddress("192.30.255.112");
 
-        Console.Write("Enter the offset (1-25): ");
-        int shift = int.Parse(Console.ReadLine() ?? "3") % 26;
+        //Console.WriteLine("\n After updating fields ");
+        //Console.WriteLine($"Name: {site2.GetName()}");
+        //Console.WriteLine($"IP:    {site2.GetIpAddress()}");
 
-        string encrypted = CaesarCipher.Encrypt(text, shift);
-        string decrypted = CaesarCipher.Decrypt(encrypted, shift);
+        //Task 5
 
-        Console.WriteLine($"\nOriginal:  {text}");
-        Console.WriteLine($"Encrypted: {encrypted}");
-        Console.WriteLine($"Decrypted: {decrypted}");
+        Console.WriteLine("=== Input from console ===");
+        Journal j1 = new Journal();
+        j1.Input();
+
+        Console.WriteLine("\n--- Journal 1 ---");
+        j1.Print();
+
+        // 2 — via constructor
+        Journal j2 = new Journal(
+            "National Geographic",
+            1888,
+            "Science and nature magazine",
+            "+1-800-647-5463",
+            "contact@natgeo.com"
+        );
+
+        Console.WriteLine("\n--- Journal 2 ---");
+        j2.Print();
+
+        // 3 — via setters
+        j2.SetName("National Geographic (UA)");
+        j2.SetPhone("+380-44-000-0000");
+
+        Console.WriteLine("\n--- After update ---");
+        Console.WriteLine($"Name:  {j2.GetName()}");
+        Console.WriteLine($"Phone: {j2.GetPhone()}");
     }
+
+    //Task 1
+
+    //static void DrawSquare(int size, char symbol)
+    //{
+    //    for (int i = 0; i < size; i++)
+    //    {
+    //        for (int j = 0; j < size; j++)
+    //        {
+    //            Console.Write(symbol);
+    //        }
+
+    //        Console.WriteLine();
+    //    }
+    //}
 }
 
-class CaesarCipher
+//Task 4
+
+//class Website
+//{
+//    private string name;
+//    private string url;
+//    private string description;
+//    private string ipAddress;
+
+//    public Website() { }
+
+//    public Website(string name, string url, string description, string ipAddress)
+//    {
+//        this.name = name;
+//        this.url = url;
+//        this.description = description;
+//        this.ipAddress = ipAddress;
+//    }
+
+//    public string GetName() => name;
+//    public string GetUrl() => url;
+//    public string GetDescription() => description;
+//    public string GetIpAddress() => ipAddress;
+
+//    public void SetName(string value) => name = value;
+//    public void SetUrl(string value) => url = value;
+//    public void SetDescription(string value) => description = value;
+//    public void SetIpAddress(string value) => ipAddress = value;
+
+//    public void Input()
+//    {
+//        Console.Write("Site name:  ");
+//        name = Console.ReadLine() ?? "";
+
+//        Console.Write("URL:          ");
+//        url = Console.ReadLine() ?? "";
+
+//        Console.Write("Description:         ");
+//        description = Console.ReadLine() ?? "";
+
+//        Console.Write("IP address:    ");
+//        ipAddress = Console.ReadLine() ?? "";
+//    }
+
+//    public void Print()
+//    {
+//        Console.WriteLine($"  Name:    {name}");
+//        Console.WriteLine($"  URL:      {url}");
+//        Console.WriteLine($"  Description:     {description}");
+//        Console.WriteLine($"  IP:       {ipAddress}");
+//    }
+//}
+
+//Task 5
+
+class Journal
 {
-    static char CaesarChar(char c, int shift)
+    private string name;
+    private int foundedYear;
+    private string description;
+    private string phone;
+    private string email;
+
+    public Journal() { }
+
+    public Journal(string name, int foundedYear, string description, string phone, string email)
     {
-        if (!char.IsLetter(c)) return c;
-        char baseChar = char.IsUpper(c) ? 'A' : 'a';
-        return (char)(baseChar + (c - baseChar + shift) % 26);
+        this.name = name;
+        this.foundedYear = foundedYear;
+        this.description = description;
+        this.phone = phone;
+        this.email = email;
     }
 
-    public static string Encrypt(string text, int shift) =>
-        new string(text.Select(c => CaesarChar(c, shift)).ToArray());
+    public string GetName() => name;
+    public int GetFoundedYear() => foundedYear;
+    public string GetDescription() => description;
+    public string GetPhone() => phone;
+    public string GetEmail() => email;
 
-    public static string Decrypt(string text, int shift) =>
-        Encrypt(text, 26 - shift);
+    public void SetName(string value) => name = value;
+    public void SetFoundedYear(int value) => foundedYear = value;
+    public void SetDescription(string value) => description = value;
+    public void SetPhone(string value) => phone = value;
+    public void SetEmail(string value) => email = value;
+
+    public void Input()
+    {
+        Console.Write("Magazine name:   ");
+        name = Console.ReadLine() ?? "";
+
+        Console.Write("Year of foundation:  ");
+        foundedYear = int.Parse(Console.ReadLine() ?? "2000");
+
+        Console.Write("Description:            ");
+        description = Console.ReadLine() ?? "";
+
+        Console.Write("Phone:         ");
+        phone = Console.ReadLine() ?? "";
+
+        Console.Write("Email:           ");
+        email = Console.ReadLine() ?? "";
+    }
+
+    public void Print()
+    {
+        Console.WriteLine($"  name:               {name}");
+        Console.WriteLine($"  Year of foundation: {foundedYear}");
+        Console.WriteLine($"  Description:        {description}");
+        Console.WriteLine($"  Phone:              {phone}");
+        Console.WriteLine($"  Email:              {email}");
+    }
 }
