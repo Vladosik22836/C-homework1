@@ -1,61 +1,96 @@
 ﻿using System;
 
-namespace Graphics
+namespace WarehouseApp
 {
-    public enum ColorFormat { RGB, HEX, HSL, CMYK }
-
-    public struct RgbColor
+    public class Product
     {
-        public byte R, G, B;
+        private int _quantity;
+        private decimal _price;
 
-        // Переведення в HEX
-        public string ToHex() => $"#{R:X2}{G:X2}{B:X2}";
+        public string Name { get; set; }
 
-        // Переведення в HSL
-        public void ToHsl(out double h, out double s, out double l)
+        public int Quantity
         {
-            double rf = R / 255.0, gf = G / 255.0, bf = B / 255.0;
-            double max = Math.Max(rf, Math.Max(gf, bf)), min = Math.Min(rf, Math.Min(gf, bf));
-            double delta = max - min;
-
-            l = (max + min) / 2.0;
-            if (delta == 0) h = s = 0;
-            else
+            get => _quantity;
+            set
             {
-                s = l > 0.5 ? delta / (2.0 - max - min) : delta / (max + min);
-                if (max == rf) h = (gf - bf) / delta + (gf < bf ? 6 : 0);
-                else if (max == gf) h = (bf - rf) / delta + 2;
-                else h = (rf - gf) / delta + 4;
-                h *= 60;
+                if (value < 0)
+                    throw new ArgumentException("Quantity cannot be negative.");
+                _quantity = value;
             }
-            s *= 100; l *= 100;
         }
 
-        // Переведення в CMYK
-        public void ToCmyk(out double c, out double m, out double y, out double k)
+        public decimal Price
         {
-            double rf = R / 255.0, gf = G / 255.0, bf = B / 255.0;
-            k = 1.0 - Math.Max(rf, Math.Max(gf, bf));
-            if (k == 1.0) c = m = y = 0;
-            else
+            get => _price;
+            set
             {
-                c = (1.0 - rf - k) / (1.0 - k) * 100;
-                m = (1.0 - gf - k) / (1.0 - k) * 100;
-                y = (1.0 - bf - k) / (1.0 - k) * 100;
+                if (value < 0)
+                    throw new ArgumentException("Price cannot be negative.");
+                _price = value;
             }
-            k *= 100;
         }
+
+        public Product(string name, int quantity, decimal price)
+        {
+            Name = name;
+            Quantity = quantity;
+            Price = price;
+        }
+
+        public static Product operator +(Product p, int amount)
+        {
+            p.Quantity += amount;
+            return p;
+        }
+
+        public static Product operator -(Product p, int amount)
+        {
+            p.Quantity -= amount;
+            return p;
+        }
+
+        public static bool operator ==(Product p1, Product p2)
+        {
+            if (ReferenceEquals(p1, p2)) return true;
+            if (p1 is null || p2 is null) return false;
+            return p1.Price == p2.Price;
+        }
+
+        public static bool operator !=(Product p1, Product p2) => !(p1 == p2);
+
+        public static bool operator >(Product p1, Product p2) => p1.Quantity > p2.Quantity;
+        public static bool operator <(Product p1, Product p2) => p1.Quantity < p2.Quantity;
+
+        public override bool Equals(object obj) => obj is Product p && this == p;
+        public override int GetHashCode() => HashCode.Combine(Price);
+
+        public override string ToString() => $"{Name}: {Quantity} pcs at ${Price}";
     }
 
     class Program
     {
         static void Main()
         {
-            RgbColor myColor = new RgbColor { R = 255, G = 100, B = 50 };
-            Console.WriteLine($"HEX: {myColor.ToHex()}");
+            try
+            {
+                Product p1 = new Product("Laptop", 5, 1200);
+                Product p2 = new Product("Phone", 10, 1200);
 
-            myColor.ToHsl(out double h, out double s, out double l);
-            Console.WriteLine($"HSL: {h:F1}°, {s:F1}%, {l:F1}%");
+                Console.WriteLine("--- Initial Products ---");
+                Console.WriteLine(p1);
+                Console.WriteLine(p2);
+
+                p1 += 5;
+                Console.WriteLine($"\nUpdated {p1.Name} quantity: {p1.Quantity}");
+
+                Console.WriteLine($"Prices are equal: {p1 == p2}");
+                Console.WriteLine($"{p2.Name} has more stock than {p1.Name}: {p2 > p1}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
         }
     }
 }
