@@ -1,217 +1,61 @@
 ﻿using System;
 
-class Program
+namespace Graphics
 {
-    static void Main()
+    public enum ColorFormat { RGB, HEX, HSL, CMYK }
+
+    public struct RgbColor
     {
-        ////Task 1
+        public byte R, G, B;
 
-        //Console.Write("Enter the side size: ");
-        //int size = int.Parse(Console.ReadLine() ?? "5");
+        // Переведення в HEX
+        public string ToHex() => $"#{R:X2}{G:X2}{B:X2}";
 
-        //char symbol;
+        // Переведення в HSL
+        public void ToHsl(out double h, out double s, out double l)
+        {
+            double rf = R / 255.0, gf = G / 255.0, bf = B / 255.0;
+            double max = Math.Max(rf, Math.Max(gf, bf)), min = Math.Min(rf, Math.Min(gf, bf));
+            double delta = max - min;
 
-        //while (true)
-        //{
-        //    Console.Write("Enter the symbol: ");
-        //    string input = Console.ReadLine() ?? "";
+            l = (max + min) / 2.0;
+            if (delta == 0) h = s = 0;
+            else
+            {
+                s = l > 0.5 ? delta / (2.0 - max - min) : delta / (max + min);
+                if (max == rf) h = (gf - bf) / delta + (gf < bf ? 6 : 0);
+                else if (max == gf) h = (bf - rf) / delta + 2;
+                else h = (rf - gf) / delta + 4;
+                h *= 60;
+            }
+            s *= 100; l *= 100;
+        }
 
-        //    if (input.Length == 1)
-        //    {
-        //        symbol = input[0];
-        //        break;
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Error .");
-        //    }
-        //}
-
-        //Console.WriteLine();
-        //DrawSquare(size, symbol);
-
-        //Task 4
-
-        //Console.WriteLine(" Input from the console ");
-        //Website site1 = new Website();
-        //site1.Input();
-
-        //Console.WriteLine("\n Site data 1 ");
-        //site1.Print();
-
-        //Website site2 = new Website(
-        //    "GitHub",
-        //    "https://github.com",
-        //    "Developer platform",
-        //    "140.82.121.4"
-        //);
-
-        //Console.WriteLine("\n Site data 2 ");
-        //site2.Print();
-
-        //site2.SetName("GitHub (updated)");
-        //site2.SetIpAddress("192.30.255.112");
-
-        //Console.WriteLine("\n After updating fields ");
-        //Console.WriteLine($"Name: {site2.GetName()}");
-        //Console.WriteLine($"IP:    {site2.GetIpAddress()}");
-
-        //Task 5
-
-        Console.WriteLine("=== Input from console ===");
-        Journal j1 = new Journal();
-        j1.Input();
-
-        Console.WriteLine("\n--- Journal 1 ---");
-        j1.Print();
-
-        // 2 — via constructor
-        Journal j2 = new Journal(
-            "National Geographic",
-            1888,
-            "Science and nature magazine",
-            "+1-800-647-5463",
-            "contact@natgeo.com"
-        );
-
-        Console.WriteLine("\n--- Journal 2 ---");
-        j2.Print();
-
-        // 3 — via setters
-        j2.SetName("National Geographic (UA)");
-        j2.SetPhone("+380-44-000-0000");
-
-        Console.WriteLine("\n--- After update ---");
-        Console.WriteLine($"Name:  {j2.GetName()}");
-        Console.WriteLine($"Phone: {j2.GetPhone()}");
+        // Переведення в CMYK
+        public void ToCmyk(out double c, out double m, out double y, out double k)
+        {
+            double rf = R / 255.0, gf = G / 255.0, bf = B / 255.0;
+            k = 1.0 - Math.Max(rf, Math.Max(gf, bf));
+            if (k == 1.0) c = m = y = 0;
+            else
+            {
+                c = (1.0 - rf - k) / (1.0 - k) * 100;
+                m = (1.0 - gf - k) / (1.0 - k) * 100;
+                y = (1.0 - bf - k) / (1.0 - k) * 100;
+            }
+            k *= 100;
+        }
     }
 
-    //Task 1
-
-    //static void DrawSquare(int size, char symbol)
-    //{
-    //    for (int i = 0; i < size; i++)
-    //    {
-    //        for (int j = 0; j < size; j++)
-    //        {
-    //            Console.Write(symbol);
-    //        }
-
-    //        Console.WriteLine();
-    //    }
-    //}
-}
-
-//Task 4
-
-//class Website
-//{
-//    private string name;
-//    private string url;
-//    private string description;
-//    private string ipAddress;
-
-//    public Website() { }
-
-//    public Website(string name, string url, string description, string ipAddress)
-//    {
-//        this.name = name;
-//        this.url = url;
-//        this.description = description;
-//        this.ipAddress = ipAddress;
-//    }
-
-//    public string GetName() => name;
-//    public string GetUrl() => url;
-//    public string GetDescription() => description;
-//    public string GetIpAddress() => ipAddress;
-
-//    public void SetName(string value) => name = value;
-//    public void SetUrl(string value) => url = value;
-//    public void SetDescription(string value) => description = value;
-//    public void SetIpAddress(string value) => ipAddress = value;
-
-//    public void Input()
-//    {
-//        Console.Write("Site name:  ");
-//        name = Console.ReadLine() ?? "";
-
-//        Console.Write("URL:          ");
-//        url = Console.ReadLine() ?? "";
-
-//        Console.Write("Description:         ");
-//        description = Console.ReadLine() ?? "";
-
-//        Console.Write("IP address:    ");
-//        ipAddress = Console.ReadLine() ?? "";
-//    }
-
-//    public void Print()
-//    {
-//        Console.WriteLine($"  Name:    {name}");
-//        Console.WriteLine($"  URL:      {url}");
-//        Console.WriteLine($"  Description:     {description}");
-//        Console.WriteLine($"  IP:       {ipAddress}");
-//    }
-//}
-
-//Task 5
-
-class Journal
-{
-    private string name;
-    private int foundedYear;
-    private string description;
-    private string phone;
-    private string email;
-
-    public Journal() { }
-
-    public Journal(string name, int foundedYear, string description, string phone, string email)
+    class Program
     {
-        this.name = name;
-        this.foundedYear = foundedYear;
-        this.description = description;
-        this.phone = phone;
-        this.email = email;
-    }
+        static void Main()
+        {
+            RgbColor myColor = new RgbColor { R = 255, G = 100, B = 50 };
+            Console.WriteLine($"HEX: {myColor.ToHex()}");
 
-    public string GetName() => name;
-    public int GetFoundedYear() => foundedYear;
-    public string GetDescription() => description;
-    public string GetPhone() => phone;
-    public string GetEmail() => email;
-
-    public void SetName(string value) => name = value;
-    public void SetFoundedYear(int value) => foundedYear = value;
-    public void SetDescription(string value) => description = value;
-    public void SetPhone(string value) => phone = value;
-    public void SetEmail(string value) => email = value;
-
-    public void Input()
-    {
-        Console.Write("Magazine name:   ");
-        name = Console.ReadLine() ?? "";
-
-        Console.Write("Year of foundation:  ");
-        foundedYear = int.Parse(Console.ReadLine() ?? "2000");
-
-        Console.Write("Description:            ");
-        description = Console.ReadLine() ?? "";
-
-        Console.Write("Phone:         ");
-        phone = Console.ReadLine() ?? "";
-
-        Console.Write("Email:           ");
-        email = Console.ReadLine() ?? "";
-    }
-
-    public void Print()
-    {
-        Console.WriteLine($"  name:               {name}");
-        Console.WriteLine($"  Year of foundation: {foundedYear}");
-        Console.WriteLine($"  Description:        {description}");
-        Console.WriteLine($"  Phone:              {phone}");
-        Console.WriteLine($"  Email:              {email}");
+            myColor.ToHsl(out double h, out double s, out double l);
+            Console.WriteLine($"HSL: {h:F1}°, {s:F1}%, {l:F1}%");
+        }
     }
 }
