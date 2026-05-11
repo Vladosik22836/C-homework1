@@ -1,95 +1,84 @@
 ﻿using System;
 
-namespace WarehouseApp
+namespace DeviceApp
 {
-    public class Product
+    // Base class
+    public abstract class Device
     {
-        private int _quantity;
-        private decimal _price;
-
         public string Name { get; set; }
+        public string Characteristics { get; set; }
 
-        public int Quantity
-        {
-            get => _quantity;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentException("Quantity cannot be negative.");
-                _quantity = value;
-            }
-        }
-
-        public decimal Price
-        {
-            get => _price;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentException("Price cannot be negative.");
-                _price = value;
-            }
-        }
-
-        public Product(string name, int quantity, decimal price)
+        protected Device(string name, string characteristics)
         {
             Name = name;
-            Quantity = quantity;
-            Price = price;
+            Characteristics = characteristics;
         }
 
-        public static Product operator +(Product p, int amount)
+        public abstract void Sound();
+
+        public void Show()
         {
-            p.Quantity += amount;
-            return p;
+            Console.WriteLine($"Device Name: {Name}");
         }
 
-        public static Product operator -(Product p, int amount)
+        public void Desc()
         {
-            p.Quantity -= amount;
-            return p;
+            Console.WriteLine($"Description: {Characteristics}");
         }
+    }
 
-        public static bool operator ==(Product p1, Product p2)
-        {
-            if (ReferenceEquals(p1, p2)) return true;
-            if (p1 is null || p2 is null) return false;
-            return p1.Price == p2.Price;
-        }
+    // Derived class: Kettle
+    public class Kettle : Device
+    {
+        public Kettle(string name, string characteristics) : base(name, characteristics) { }
 
-        public static bool operator !=(Product p1, Product p2) => !(p1 == p2);
+        public override void Sound() => Console.WriteLine("Sound: Ssss-Whistle!");
+    }
 
-        public static bool operator >(Product p1, Product p2) => p1.Quantity > p2.Quantity;
-        public static bool operator <(Product p1, Product p2) => p1.Quantity < p2.Quantity;
+    // Derived class: Microwave
+    public class Microwave : Device
+    {
+        public Microwave(string name, string characteristics) : base(name, characteristics) { }
 
-        public override bool Equals(object obj) => obj is Product p && this == p;
-        public override int GetHashCode() => HashCode.Combine(Price);
+        public override void Sound() => Console.WriteLine("Sound: Hummm... Beeep!");
+    }
 
-        public override string ToString() => $"{Name}: {Quantity} pcs at ${Price}";
+    // Derived class: Car
+    public class Car : Device
+    {
+        public Car(string name, string characteristics) : base(name, characteristics) { }
+
+        public override void Sound() => Console.WriteLine("Sound: Vroom Vroom!");
+    }
+
+    // Derived class: Steamboat
+    public class Steamboat : Device
+    {
+        public Steamboat(string name, string characteristics) : base(name, characteristics) { }
+
+        public override void Sound() => Console.WriteLine("Sound: Tooooot-Tooooot!");
     }
 
     class Program
     {
         static void Main()
         {
-            try
+            // Creating instances
+            Device[] devices = new Device[]
             {
-                Product p1 = new Product("Laptop", 5, 1200);
-                Product p2 = new Product("Phone", 10, 1200);
+                new Kettle("Electric Kettle", "1.7L, 2200W, Stainless Steel"),
+                new Microwave("Samsung Smart", "800W, 23L, Ceramic Inside"),
+                new Car("Tesla Model 3", "Electric, Autopilot, Dual Motor"),
+                new Steamboat("Titanic II", "Steam engine, Luxury interior")
+            };
 
-                Console.WriteLine("--- Initial Products ---");
-                Console.WriteLine(p1);
-                Console.WriteLine(p2);
-
-                p1 += 5;
-                Console.WriteLine($"\nUpdated {p1.Name} quantity: {p1.Quantity}");
-
-                Console.WriteLine($"Prices are equal: {p1 == p2}");
-                Console.WriteLine($"{p2.Name} has more stock than {p1.Name}: {p2 > p1}");
-            }
-            catch (Exception ex)
+            // Displaying information for each device
+            foreach (var device in devices)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                device.Show();
+                device.Desc();
+                device.Sound();
+                Console.WriteLine(new string('-', 30));
             }
         }
     }
