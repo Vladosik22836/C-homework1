@@ -1,63 +1,157 @@
-﻿using System;
+﻿//using System;
 
-namespace ArrayCalcExample
+//namespace ArrayCalcExample
+//{
+
+//    interface ICalc
+//    {
+//        int Less(int valueToCompare);
+//        int Greater(int valueToCompare);
+//    }
+
+//    class Array : ICalc
+//    {
+//        private int[] numbers;
+
+//        public Array(int[] numbers)
+//        {
+//            this.numbers = numbers;
+//        }
+
+//        public int Less(int valueToCompare)
+//        {
+//            int count = 0;
+
+//            foreach (int num in numbers)
+//            {
+//                if (num < valueToCompare)
+//                {
+//                    count++;
+//                }
+//            }
+
+//            return count;
+//        }
+
+//        public int Greater(int valueToCompare)
+//        {
+//            int count = 0;
+
+//            foreach (int num in numbers)
+//            {
+//                if (num > valueToCompare)
+//                {
+//                    count++;
+//                }
+//            }
+
+//            return count;
+//        }
+
+//        public void Show()
+//        {
+//            Console.WriteLine("Array elements:");
+
+//            foreach (int num in numbers)
+//            {
+//                Console.Write(num + " ");
+//            }
+
+//            Console.WriteLine();
+//        }
+//    }
+
+//    class Program
+//    {
+//        static void Main(string[] args)
+//        {
+//            int[] data = { 5, 10, 15, 20, 25, 30 };
+
+//            Array array = new Array(data);
+
+//            array.Show();
+
+//            int value = 18;
+
+//            Console.WriteLine($"\nComparison value: {value}");
+
+//            Console.WriteLine($"Number of elements less than {value}: {array.Less(value)}");
+
+//            Console.WriteLine( $"Number of elements greater than {value}: {array.Greater(value)}");
+//        }
+//    }
+//}
+namespace RemoteControlExample
 {
-    
-    interface ICalc
+    // Interface
+    interface IRemoteControl
     {
-        int Less(int valueToCompare);
-        int Greater(int valueToCompare);
+        void TurnOn();
+        void TurnOff();
+        void SetChannel(int channel);
     }
 
-    class Array : ICalc
+    // TV class
+    class TV : IRemoteControl
     {
-        private int[] numbers;
+        private bool isOn;
+        private int currentChannel;
 
-        public Array(int[] numbers)
+        public void TurnOn()
         {
-            this.numbers = numbers;
+            isOn = true;
+            Console.WriteLine("TV is turned ON");
         }
 
-        public int Less(int valueToCompare)
+        public void TurnOff()
         {
-            int count = 0;
-
-            foreach (int num in numbers)
-            {
-                if (num < valueToCompare)
-                {
-                    count++;
-                }
-            }
-
-            return count;
+            isOn = false;
+            Console.WriteLine("TV is turned OFF");
         }
 
-        public int Greater(int valueToCompare)
+        public void SetChannel(int channel)
         {
-            int count = 0;
-
-            foreach (int num in numbers)
+            if (isOn)
             {
-                if (num > valueToCompare)
-                {
-                    count++;
-                }
+                currentChannel = channel;
+                Console.WriteLine($"TV channel set to {currentChannel}");
             }
+            else
+            {
+                Console.WriteLine("Turn on the TV first");
+            }
+        }
+    }
 
-            return count;
+    // Radio class
+    class Radio : IRemoteControl
+    {
+        private bool isOn;
+        private int currentChannel;
+
+        public void TurnOn()
+        {
+            isOn = true;
+            Console.WriteLine("Radio is turned ON");
         }
 
-        public void Show()
+        public void TurnOff()
         {
-            Console.WriteLine("Array elements:");
+            isOn = false;
+            Console.WriteLine("Radio is turned OFF");
+        }
 
-            foreach (int num in numbers)
+        public void SetChannel(int channel)
+        {
+            if (isOn)
             {
-                Console.Write(num + " ");
+                currentChannel = channel;
+                Console.WriteLine($"Radio station set to {currentChannel}");
             }
-
-            Console.WriteLine();
+            else
+            {
+                Console.WriteLine("Turn on the radio first");
+            }
         }
     }
 
@@ -65,19 +159,19 @@ namespace ArrayCalcExample
     {
         static void Main(string[] args)
         {
-            int[] data = { 5, 10, 15, 20, 25, 30 };
+            TV tv = new TV();
 
-            Array array = new Array(data);
+            tv.TurnOn();
+            tv.SetChannel(5);
+            tv.TurnOff();
 
-            array.Show();
+            Console.WriteLine();
 
-            int value = 18;
+            Radio radio = new Radio();
 
-            Console.WriteLine($"\nComparison value: {value}");
-
-            Console.WriteLine($"Number of elements less than {value}: {array.Less(value)}");
-
-            Console.WriteLine( $"Number of elements greater than {value}: {array.Greater(value)}");
+            radio.TurnOn();
+            radio.SetChannel(101);
+            radio.TurnOff();
         }
     }
 }
