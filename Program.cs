@@ -1,80 +1,156 @@
-﻿class Homework
+﻿using System;
+using System.Collections.Generic;
+
+//Task 1
+
+class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
-        ////Task 1
-        Console.Write("Enter number (1-100): ");
-
-        string input = Console.ReadLine();
-
-        if (!int.TryParse(input, out int num))
+        Func<string, string> getRainbowColor = delegate (string color)
         {
-            Console.WriteLine("Error, an integer is required");
-            return;
-        }
+            switch (color.ToLower())
+            {
+                case "red":
+                    return "RGB(255, 0, 0)";
+                case "orange":
+                    return "RGB(255, 165, 0)";
+                case "yellow":
+                    return "RGB(255, 255, 0)";
+                case "green":
+                    return "RGB(0, 255, 0)";
+                case "blue":
+                    return "RGB(0, 0, 255)";
+                case "indigo":
+                    return "RGB(75, 0, 130)";
+                case "violet":
+                    return "RGB(238, 130, 238)";
+                default:
+                    return "Unknown color";
+            }
+        };
 
-        if (num < 1 || num > 100)
-        {
-            Console.WriteLine("Error, 1 and 100!");
-            return;
-        }
-
-        if (num % 3 == 0 && num % 5 == 0)
-            Console.WriteLine("Fizz Buzz");
-        else if (num % 3 == 0)
-            Console.WriteLine("Fizz");
-        else if (num % 5 == 0)
-            Console.WriteLine("Buzz");
-        else
-            Console.WriteLine(num);
-
-        ////Task 2
-
-        //Console.Write("Enter the number: ");
-        //double num = double.Parse(Console.ReadLine());
-
-        //Console.Write("Enter a percentage of a number: ");
-        //double percent = double.Parse(Console.ReadLine());
-
-        //if (num < 1 || num > 100 || percent < 1 || percent > 100)
-        //{
-        //    Console.WriteLine("Error, invalid!!!!!!!!");
-        //    return; 
-        //}
-
-        //double result = num * percent / 100;
-
-        //Console.WriteLine("Result -> " + result); // дуже не привичний синаксиз, я замість "+" ставив "," та думав чого не працює :) 
-
-
-        //Task 3 з цим завданням дуже довго грався, але зробив всі захисти від користувача
-
-        //Console.Write("Enter 4 numbers: ");
-        //string[] parts = Console.ReadLine().Split(' ');
-
-        //if (parts.Length != 4)
-        //{
-        //    Console.WriteLine("Error, 4 digits are required.");
-        //    return;
-        //}
-
-        //if (!int.TryParse(parts[0], out int a) ||
-        //    !int.TryParse(parts[1], out int b) ||
-        //    !int.TryParse(parts[2], out int c) ||
-        //    !int.TryParse(parts[3], out int d))
-        //{
-        //    Console.WriteLine("Error, an integer is required.");
-        //    return;
-        //}
-
-        //if (a < 0 || a > 9 || b < 0 || b > 9 || c < 0 || c > 9 || d < 0 || d > 9)
-        //{
-        //    Console.WriteLine("Error, 0 to 9!");
-        //    return;
-        //}
-
-        //int number = a * 1000 + b * 100 + c * 10 + d;
-
-        //Console.WriteLine("Result number: " + number);
+        Console.WriteLine(getRainbowColor("red"));
+        Console.WriteLine(getRainbowColor("green"));
+        Console.WriteLine(getRainbowColor("blue"));
+        Console.WriteLine(getRainbowColor("yellow"));
+        Console.WriteLine(getRainbowColor("black")); 
     }
 }
+
+//Task 2
+//namespace BackpackApp
+//{
+//    class Item
+//    {
+//        public string Name { get; set; }
+//        public double Size { get; set; }
+
+//        public Item(string name, double size)
+//        {
+//            Name = name;
+//            Size = size;
+//        }
+//    }
+
+//    class Backpack
+//    {
+//        public string Color { get; set; }
+//        public string Brand { get; set; }
+//        public string Fabric { get; set; }
+//        public double Weight { get; set; }
+//        public double Capacity { get; set; }
+
+//        public List<Item> Content = new List<Item>();
+
+//        public event Action<Item> ItemAdded;
+//        public event Action<Item> ItemRemoved;
+//        public event Action Changed;
+
+//        public void AddItem(Item item)
+//        {
+//            double used = 0;
+
+//            foreach (var i in Content)
+//                used += i.Size;
+
+//            if (used + item.Size > Capacity)
+//                throw new Exception("Backpack is full!");
+
+//            Content.Add(item);
+//            ItemAdded?.Invoke(item);
+//        }
+
+//        public void RemoveItem(Item item)
+//        {
+//            Content.Remove(item);
+//            ItemRemoved?.Invoke(item);
+//        }
+
+//        public void ChangeSettings(string color, string brand, string fabric, double weight, double capacity)
+//        {
+//            Color = color;
+//            Brand = brand;
+//            Fabric = fabric;
+//            Weight = weight;
+
+//            double used = 0;
+//            foreach (var i in Content)
+//                used += i.Size;
+
+//            if (used > capacity)
+//                throw new Exception("New capacity is too small!");
+
+//            Capacity = capacity;
+//            Changed?.Invoke();
+//        }
+//    }
+
+//    class Program
+//    {
+//        static void Main(string[] args)
+//        {
+//            Backpack backpack = new Backpack
+//            {
+//                Color = "Black",
+//                Brand = "Nike",
+//                Fabric = "Polyester",
+//                Weight = 1.2,
+//                Capacity = 10
+//            };
+
+//            backpack.ItemAdded += delegate (Item item)
+//            {
+//                Console.WriteLine("Added: " + item.Name);
+//            };
+
+//            backpack.ItemRemoved += delegate (Item item)
+//            {
+//                Console.WriteLine("Removed: " + item.Name);
+//            };
+
+//            backpack.Changed += delegate
+//            {
+//                Console.WriteLine("Backpack settings changed");
+//            };
+
+//            try
+//            {
+//                Item book = new Item("Book", 3);
+//                Item laptop = new Item("Laptop", 5);
+
+//                backpack.AddItem(book);
+//                backpack.AddItem(laptop);
+
+//                backpack.RemoveItem(book);
+
+//                backpack.ChangeSettings("Blue", "Adidas", "Leather", 1.5, 8);
+//            }
+//            catch (Exception ex)
+//            {
+//                Console.WriteLine("Error: " + ex.Message);
+//            }
+//        }
+//    }
+//}
+
