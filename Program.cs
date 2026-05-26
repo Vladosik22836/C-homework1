@@ -1,61 +1,152 @@
 ﻿using System;
 
-namespace Graphics
+//Task 1
+
+//namespace TheaterApp
+//{
+//    class Play : IDisposable
+//    {
+//        public string Title { get; set; }
+//        public string AuthorFullName { get; set; }
+//        public string Genre { get; set; }
+//        public int Year { get; set; }
+
+//        public Play(string title, string authorFullName, string genre, int year)
+//        {
+//            Title = title;
+//            AuthorFullName = authorFullName;
+//            Genre = genre;
+//            Year = year;
+
+//            Console.WriteLine($"[CREATE] Play '{Title}' has been created.");
+//        }
+
+//        public void ShowInfo()
+//        {
+//            Console.WriteLine("----- Play Information -----");
+//            Console.WriteLine($"Title: {Title}");
+//            Console.WriteLine($"Author: {AuthorFullName}");
+//            Console.WriteLine($"Genre: {Genre}");
+//            Console.WriteLine($"Year: {Year}");
+//            Console.WriteLine("----------------------------");
+//        }
+
+//        ~Play()
+//        {
+//            Console.WriteLine($"[FINALIZER] Destructor called for '{Title}'.");
+//        }
+
+//        public void Dispose()
+//        {
+//            Console.WriteLine($"[DISPOSE] Object '{Title}' has been released.");
+//            GC.SuppressFinalize(this);
+//        }
+//    }
+
+//    class Program
+//    {
+//        static void Main(string[] args)
+//        {
+//            using (Play play1 = new Play("Hamlet", "William Shakespeare", "Tragedy", 1603))
+//            {
+//                play1.ShowInfo();
+//            }
+
+//            Play play2 = new Play("The Forest Song", "Lesya Ukrainka", "Drama-Fantasy", 1911);
+//            play2.ShowInfo();
+//            play2.Dispose();
+
+//            CreateTestObject();
+
+//            GC.Collect();
+//            GC.WaitForPendingFinalizers();
+
+//            Console.WriteLine("Program finished.");
+//        }
+
+//        static void CreateTestObject()
+//        {
+//            Play play3 = new Play("The Inspector General", "Nikolai Gogol", "Comedy", 1836);
+//            play3.ShowInfo();
+//        }
+//    }
+//}
+
+//Task 2
+
+namespace StoreApp
 {
-    public enum ColorFormat { RGB, HEX, HSL, CMYK }
-
-    public struct RgbColor
+    enum StoreType
     {
-        public byte R, G, B;
+        Grocery,
+        Household,
+        Clothing,
+        Shoes
+    }
 
-        // Переведення в HEX
-        public string ToHex() => $"#{R:X2}{G:X2}{B:X2}";
+    class Store : IDisposable
+    {
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public StoreType Type { get; set; }
 
-        // Переведення в HSL
-        public void ToHsl(out double h, out double s, out double l)
+        public Store(string name, string address, StoreType type)
         {
-            double rf = R / 255.0, gf = G / 255.0, bf = B / 255.0;
-            double max = Math.Max(rf, Math.Max(gf, bf)), min = Math.Min(rf, Math.Min(gf, bf));
-            double delta = max - min;
+            Name = name;
+            Address = address;
+            Type = type;
 
-            l = (max + min) / 2.0;
-            if (delta == 0) h = s = 0;
-            else
-            {
-                s = l > 0.5 ? delta / (2.0 - max - min) : delta / (max + min);
-                if (max == rf) h = (gf - bf) / delta + (gf < bf ? 6 : 0);
-                else if (max == gf) h = (bf - rf) / delta + 2;
-                else h = (rf - gf) / delta + 4;
-                h *= 60;
-            }
-            s *= 100; l *= 100;
+            Console.WriteLine($"[CREATE] Store '{Name}' created.");
         }
 
-        // Переведення в CMYK
-        public void ToCmyk(out double c, out double m, out double y, out double k)
+        public void ShowInfo()
         {
-            double rf = R / 255.0, gf = G / 255.0, bf = B / 255.0;
-            k = 1.0 - Math.Max(rf, Math.Max(gf, bf));
-            if (k == 1.0) c = m = y = 0;
-            else
-            {
-                c = (1.0 - rf - k) / (1.0 - k) * 100;
-                m = (1.0 - gf - k) / (1.0 - k) * 100;
-                y = (1.0 - bf - k) / (1.0 - k) * 100;
-            }
-            k *= 100;
+            Console.WriteLine("----- Store Information -----");
+            Console.WriteLine($"Name: {Name}");
+            Console.WriteLine($"Address: {Address}");
+            Console.WriteLine($"Type: {Type}");
+            Console.WriteLine("-----------------------------");
+        }
+
+        public void Dispose()
+        {
+            Console.WriteLine($"[DISPOSE] Store '{Name}' disposed.");
+            GC.SuppressFinalize(this);
+        }
+
+        ~Store()
+        {
+            Console.WriteLine($"[FINALIZER] Destructor called for '{Name}'.");
         }
     }
 
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
-            RgbColor myColor = new RgbColor { R = 255, G = 100, B = 50 };
-            Console.WriteLine($"HEX: {myColor.ToHex()}");
+            Store store1 = new Store(
+                "ATB",
+                "15 Central Street",
+                StoreType.Grocery);
 
-            myColor.ToHsl(out double h, out double s, out double l);
-            Console.WriteLine($"HSL: {h:F1}°, {s:F1}%, {l:F1}%");
+            store1.ShowInfo();
+
+            store1.Dispose();
+
+            Console.WriteLine();
+
+            using (Store store2 = new Store(
+                "Fashion Shop",
+                "22 Main Avenue",
+                StoreType.Clothing))
+            {
+                store2.ShowInfo();
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Console.WriteLine("Program finished.");
         }
     }
 }
