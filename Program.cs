@@ -1,97 +1,150 @@
 ﻿using System;
-using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
+
+//Task 1
+
+// Базовий клас 
+//class SeaCreature
+//{
+//    public string Name { get; set; }
+//    public string Species { get; set; }
+
+//    public SeaCreature(string name, string species)
+//    {
+//        Name = name;
+//        Species = species;
+//    }
+
+//    public virtual void ShowInfo()
+//    {
+//        Console.WriteLine($"{Species}: {Name}");
+//    }
+//}
+
+//class Fish : SeaCreature
+//{
+//    public Fish(string name)
+//        : base(name, "Fish") { }
+//}
+
+//class Shark : SeaCreature
+//{
+//    public Shark(string name)
+//        : base(name, "Shark") { }
+//}
+
+//class Dolphin : SeaCreature
+//{
+//    public Dolphin(string name)
+//        : base(name, "Dolphin") { }
+//}
+
+//class Oceanarium : IEnumerable<SeaCreature>
+//{
+//    private List<SeaCreature> creatures = new List<SeaCreature>();
+
+//    public void AddCreature(SeaCreature creature)
+//    {
+//        creatures.Add(creature);
+//    }
+
+//    public IEnumerator<SeaCreature> GetEnumerator()
+//    {
+//        foreach (var creature in creatures)
+//        {
+//            yield return creature;
+//        }
+//    }
+
+//    IEnumerator IEnumerable.GetEnumerator()
+//    {
+//        return GetEnumerator();
+//    }
+//}
+
+//class Program
+//{
+//    static void Main()
+//    {
+//        Oceanarium oceanarium = new Oceanarium();
+
+//        oceanarium.AddCreature(new Fish("Nemo"));
+//        oceanarium.AddCreature(new Shark("Bruce"));
+//        oceanarium.AddCreature(new Dolphin("Flipper"));
+
+//        Console.WriteLine("Aquarium inhabitants: ");
+
+//        foreach (var creature in oceanarium)
+//        {
+//            creature.ShowInfo();
+//        }
+//    }
+//}
+
+//Task 2
+
+// Клас Гравець
+class Player
+{
+    public string Name { get; set; }
+    public int Number { get; set; }
+    public string Position { get; set; }
+
+    public Player(string name, int number, string position)
+    {
+        Name = name;
+        Number = number;
+        Position = position;
+    }
+
+    public void ShowInfo()
+    {
+        Console.WriteLine($"№{Number} {Name} - {Position}");
+    }
+}
+
+class FootballTeam : IEnumerable<Player>
+{
+    private List<Player> players = new List<Player>();
+
+    public void AddPlayer(Player player)
+    {
+        players.Add(player);
+    }
+
+    public IEnumerator<Player> GetEnumerator()
+    {
+        foreach (var player in players)
+        {
+            yield return player;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
 
 class Program
 {
     static void Main()
     {
-        ////Task 1
+        FootballTeam team = new FootballTeam();
 
-        //int[,] matrix = new int[5, 5];
-        //Random rnd = new Random();
+        team.AddPlayer(new Player("Messi", 10, "Forward"));
+        team.AddPlayer(new Player("Ronaldo", 7, "Forward"));
+        team.AddPlayer(new Player("Neuer", 1, "Goalkeeper"));
 
-        //Console.WriteLine("Massif:");
-        //for (int i = 0; i < 5; i++)
-        //{
-        //    for (int j = 0; j < 5; j++)
-        //    {
-        //        matrix[i, j] = rnd.Next(-100, 101);
-        //        Console.Write($"{matrix[i, j],5}");
-        //    }
-        //    Console.WriteLine();
-        //}
+        Console.WriteLine("Football team composition:");
 
-        //int minVal = matrix[0, 0], maxVal = matrix[0, 0];
-        //int minRow = 0, minCol = 0, maxRow = 0, maxCol = 0;
-
-        //for (int i = 0; i < 5; i++)
-        //{
-        //    for (int j = 0; j < 5; j++)
-        //    {
-        //        if (matrix[i, j] < minVal)
-        //        {
-        //            minVal = matrix[i, j];
-        //            minRow = i; minCol = j;
-        //        }
-        //        if (matrix[i, j] > maxVal)
-        //        {
-        //            maxVal = matrix[i, j];
-        //            maxRow = i; maxCol = j;
-        //        }
-        //    }
-        //}
-
-        //int minIndex = minRow * 5 + minCol;
-        //int maxIndex = maxRow * 5 + maxCol;
-
-        //int left = Math.Min(minIndex, maxIndex);
-        //int right = Math.Max(minIndex, maxIndex);
-
-        //long sum = 0;
-        //for (int k = left + 1; k < right; k++)
-        //{
-        //    int row = k / 5;
-        //    int col = k % 5;
-        //    sum += matrix[row, col];
-        //}
-
-        //Console.WriteLine($"\nMini: {minVal} on position [{minRow},{minCol}]");
-        //Console.WriteLine($"Max: {maxVal} on position [{maxRow},{maxCol}]");
-
-        //if (right - left <= 1)
-        //    Console.WriteLine("\nThere are no elements between the min and max..");
-        //else
-        //    Console.WriteLine($"\nSum of elements between min and max: {sum}");
-
-        ////Task 2
-
-        Console.Write("Enter the text: ");
-        string text = Console.ReadLine() ?? "";
-
-        Console.Write("Enter the offset (1-25): ");
-        int shift = int.Parse(Console.ReadLine() ?? "3") % 26;
-
-        string encrypted = CaesarCipher.Encrypt(text, shift);
-        string decrypted = CaesarCipher.Decrypt(encrypted, shift);
-
-        Console.WriteLine($"\nOriginal:  {text}");
-        Console.WriteLine($"Encrypted: {encrypted}");
-        Console.WriteLine($"Decrypted: {decrypted}");
+        foreach (var player in team)
+        {
+            player.ShowInfo();
+        }
     }
 }
 
-class CaesarCipher
-{
-    static char CaesarChar(char c, int shift)
-    {
-        if (!char.IsLetter(c)) return c;
-        char baseChar = char.IsUpper(c) ? 'A' : 'a';
-        return (char)(baseChar + (c - baseChar + shift) % 26);
-    }
 
-    public static string Encrypt(string text, int shift) =>
-        new string(text.Select(c => CaesarChar(c, shift)).ToArray());
-
-    public static string Decrypt(string text, int shift) =>
-        Encrypt(text, 26 - shift);
-}
+        
