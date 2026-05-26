@@ -1,0 +1,1 @@
+Hello World, This is a simple example of a text file. It contains a few lines of English words. You can edit, replace, or add more content as needed. This file is easy to manage and use for practice

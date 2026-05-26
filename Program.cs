@@ -1,96 +1,132 @@
 ﻿using System;
+using System.IO;
 
-namespace WarehouseApp
+//Task 1
+
+//namespace NumberGeneratorApp
+//{
+//    class Program
+//    {
+//        static void Main(string[] args)
+//        {
+//            Random random = new Random();
+
+//            int[] numbers = new int[100];
+
+//            string primeFile = "moldova.txt"; // це звичайні числа, просто назвати їх original було б скучно :)
+//            string fibonacciFile = "fibonacci.txt";
+
+//            using (StreamWriter primeWriter = new StreamWriter(primeFile))
+//            using (StreamWriter fibonacciWriter = new StreamWriter(fibonacciFile))
+//            {
+//                for (int i = 0; i < 100; i++)
+//                {
+//                    numbers[i] = random.Next(1, 101);
+
+//                    if (IsPrime(numbers[i]))
+//                    {
+//                        primeWriter.WriteLine(numbers[i]);
+//                    }
+
+//                    if (IsFibonacci(numbers[i]))
+//                    {
+//                        fibonacciWriter.WriteLine(numbers[i]);
+//                    }
+//                }
+//            }
+
+//            Console.WriteLine("===== Application Statistics =====");
+//            Console.WriteLine($"Generated numbers: {numbers.Length}");
+//            Console.WriteLine($"Prime numbers saved to: {primeFile}");
+//            Console.WriteLine($"Fibonacci numbers saved to: {fibonacciFile}");
+
+//            Console.WriteLine("\n===== Original List of Numbers =====");
+
+//            for (int i = 0; i < numbers.Length; i++)
+//            {
+//                Console.Write(numbers[i] + " ");
+//            }
+
+//            Console.WriteLine("\n\nProgram finished.");
+//        }
+
+//        static bool IsPrime(int number)
+//        {
+//            if (number < 2)
+//                return false;
+
+//            for (int i = 2; i <= Math.Sqrt(number); i++)
+//            {
+//                if (number % i == 0)
+//                    return false;
+//            }
+
+//            return true;
+//        }
+
+//        static bool IsFibonacci(int number)
+//        {
+//            int a = 0;
+//            int b = 1;
+
+//            while (a <= number)
+//            {
+//                if (a == number)
+//                    return true;
+
+//                int temp = a + b;
+//                a = b;
+//                b = temp;
+//            }
+
+//            return false;
+//        }
+//    }
+//}
+
+//Task 2
+
+namespace TextReplacementApp
 {
-    public class Product
-    {
-        private int _quantity;
-        private decimal _price;
-
-        public string Name { get; set; }
-
-        public int Quantity
-        {
-            get => _quantity;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentException("Quantity cannot be negative.");
-                _quantity = value;
-            }
-        }
-
-        public decimal Price
-        {
-            get => _price;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentException("Price cannot be negative.");
-                _price = value;
-            }
-        }
-
-        public Product(string name, int quantity, decimal price)
-        {
-            Name = name;
-            Quantity = quantity;
-            Price = price;
-        }
-
-        public static Product operator +(Product p, int amount)
-        {
-            p.Quantity += amount;
-            return p;
-        }
-
-        public static Product operator -(Product p, int amount)
-        {
-            p.Quantity -= amount;
-            return p;
-        }
-
-        public static bool operator ==(Product p1, Product p2)
-        {
-            if (ReferenceEquals(p1, p2)) return true;
-            if (p1 is null || p2 is null) return false;
-            return p1.Price == p2.Price;
-        }
-
-        public static bool operator !=(Product p1, Product p2) => !(p1 == p2);
-
-        public static bool operator >(Product p1, Product p2) => p1.Quantity > p2.Quantity;
-        public static bool operator <(Product p1, Product p2) => p1.Quantity < p2.Quantity;
-
-        public override bool Equals(object obj) => obj is Product p && this == p;
-        public override int GetHashCode() => HashCode.Combine(Price);
-
-        public override string ToString() => $"{Name}: {Quantity} pcs at ${Price}";
-    }
-
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
-            try
+            string filePath = "text.txt";
+
+            Console.Write("Enter the word to search: ");
+            string searchWord = Console.ReadLine();
+
+            Console.Write("Enter the replacement word: ");
+            string replaceWord = Console.ReadLine();
+
+            if (!File.Exists(filePath))
             {
-                Product p1 = new Product("Laptop", 5, 1200);
-                Product p2 = new Product("Phone", 10, 1200);
-
-                Console.WriteLine("--- Initial Products ---");
-                Console.WriteLine(p1);
-                Console.WriteLine(p2);
-
-                p1 += 5;
-                Console.WriteLine($"\nUpdated {p1.Name} quantity: {p1.Quantity}");
-
-                Console.WriteLine($"Prices are equal: {p1 == p2}");
-                Console.WriteLine($"{p2.Name} has more stock than {p1.Name}: {p2 > p1}");
+                Console.WriteLine("File not found.");
+                return;
             }
-            catch (Exception ex)
+
+            string text = File.ReadAllText(filePath);
+
+            int count = 0;
+            int index = 0;
+
+            while ((index = text.IndexOf(searchWord, index)) != -1)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                count++;
+                index += searchWord.Length;
             }
+
+            text = text.Replace(searchWord, replaceWord);
+
+            File.WriteAllText(filePath, text);
+
+            Console.WriteLine("\n===== Application Statistics =====");
+            Console.WriteLine($"Search word: {searchWord}");
+            Console.WriteLine($"Replacement word: {replaceWord}");
+            Console.WriteLine($"Replacements made: {count}");
+            Console.WriteLine($"Processed file: {filePath}");
+            Console.WriteLine("Program finished.");
         }
     }
 }
