@@ -72,6 +72,8 @@
 //    }
 //}
 
+
+
 //Task 2
 
 namespace StoreApp
@@ -147,6 +149,7 @@ namespace StoreApp
             GC.WaitForPendingFinalizers();
 
             Console.WriteLine("Program finished.");
+            Console.BackgroundColor = ConsoleColor.Green;
         }
     }
 }
