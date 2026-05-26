@@ -1,129 +1,138 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-//Task 1
-
-// Базовий клас 
-//class SeaCreature
-//{
-//    public string Name { get; set; }
-//    public string Species { get; set; }
-
-//    public SeaCreature(string name, string species)
-//    {
-//        Name = name;
-//        Species = species;
-//    }
-
-//    public virtual void ShowInfo()
-//    {
-//        Console.WriteLine($"{Species}: {Name}");
-//    }
-//}
-
-//class Fish : SeaCreature
-//{
-//    public Fish(string name)
-//        : base(name, "Fish") { }
-//}
-
-//class Shark : SeaCreature
-//{
-//    public Shark(string name)
-//        : base(name, "Shark") { }
-//}
-
-//class Dolphin : SeaCreature
-//{
-//    public Dolphin(string name)
-//        : base(name, "Dolphin") { }
-//}
-
-//class Oceanarium : IEnumerable<SeaCreature>
-//{
-//    private List<SeaCreature> creatures = new List<SeaCreature>();
-
-//    public void AddCreature(SeaCreature creature)
-//    {
-//        creatures.Add(creature);
-//    }
-
-//    public IEnumerator<SeaCreature> GetEnumerator()
-//    {
-//        foreach (var creature in creatures)
-//        {
-//            yield return creature;
-//        }
-//    }
-
-//    IEnumerator IEnumerable.GetEnumerator()
-//    {
-//        return GetEnumerator();
-//    }
-//}
-
-//class Program
-//{
-//    static void Main()
-//    {
-//        Oceanarium oceanarium = new Oceanarium();
-
-//        oceanarium.AddCreature(new Fish("Nemo"));
-//        oceanarium.AddCreature(new Shark("Bruce"));
-//        oceanarium.AddCreature(new Dolphin("Flipper"));
-
-//        Console.WriteLine("Aquarium inhabitants: ");
-
-//        foreach (var creature in oceanarium)
-//        {
-//            creature.ShowInfo();
-//        }
-//    }
-//}
-
-//Task 2
-
-// Клас Гравець
-class Player
+class Student
 {
-    public string Name { get; set; }
-    public int Number { get; set; }
-    public string Position { get; set; }
+    public int Id { get; set; }
+    public string FullName { get; set; }
+    public string Group { get; set; }
 
-    public Player(string name, int number, string position)
+    public Student(int id, string fullName, string group)
     {
-        Name = name;
-        Number = number;
-        Position = position;
+        Id = id;
+        FullName = fullName;
+        Group = group;
     }
 
-    public void ShowInfo()
+    public override bool Equals(object obj)
     {
-        Console.WriteLine($"№{Number} {Name} - {Position}");
+        return obj is Student student && Id == student.Id;
+    }
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
     }
 }
 
-class FootballTeam : IEnumerable<Player>
+class CourseProgress
 {
-    private List<Player> players = new List<Player>();
+    public string CourseName { get; set; }
+    public double CurrentScore { get; set; }
+    public int CompletedTopics { get; set; }
+    public string CurrentTopic { get; set; }
 
-    public void AddPlayer(Player player)
+    public CourseProgress(string courseName, double currentScore, int completedTopics, string currentTopic)
     {
-        players.Add(player);
+        CourseName = courseName;
+        CurrentScore = currentScore;
+        CompletedTopics = completedTopics;
+        CurrentTopic = currentTopic;
     }
+}
 
-    public IEnumerator<Player> GetEnumerator()
+class EducationSystem
+{
+    private Dictionary<Student, List<CourseProgress>> students =
+        new Dictionary<Student, List<CourseProgress>>();
+
+    public void AddOrUpdateStudent(Student student)
     {
-        foreach (var player in players)
+        var existingStudent = students.Keys.FirstOrDefault(s => s.Id == student.Id);
+
+        if (existingStudent == null)
         {
-            yield return player;
+            students[student] = new List<CourseProgress>();
+        }
+        else
+        {
+            existingStudent.FullName = student.FullName;
+            existingStudent.Group = student.Group;
         }
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    public void AddOrUpdateCourse(int studentId, CourseProgress progress)
     {
-        return GetEnumerator();
+        var student = students.Keys.FirstOrDefault(s => s.Id == studentId);
+
+        if (student == null)
+            return;
+
+        var course = students[student]
+            .FirstOrDefault(c => c.CourseName == progress.CourseName);
+
+        if (course == null)
+        {
+            students[student].Add(progress);
+        }
+        else
+        {
+            course.CurrentScore = progress.CurrentScore;
+            course.CompletedTopics = progress.CompletedTopics;
+            course.CurrentTopic = progress.CurrentTopic;
+        }
+    }
+
+    public void FindByGroup(string group)
+    {
+        var result = students.Keys.Where(s => s.Group == group);
+
+        foreach (var student in result)
+        {
+            Console.WriteLine($"{student.FullName} | {student.Group}");
+        }
+    }
+
+    public void FindByScore(double minScore)
+    {
+        foreach (var item in students)
+        {
+            foreach (var course in item.Value.Where(c => c.CurrentScore >= minScore))
+            {
+                Console.WriteLine($"{item.Key.FullName} | {course.CourseName} | {course.CurrentScore}");
+            }
+        }
+    }
+
+    public void FindByCourseStatus(string courseName)
+    {
+        foreach (var item in students)
+        {
+            var course = item.Value.FirstOrDefault(c => c.CourseName == courseName);
+
+            if (course != null)
+            {
+                Console.WriteLine(
+                    $"{item.Key.FullName} | {course.CourseName} | " +
+                    $"Topic: {course.CurrentTopic} | Mark: {course.CurrentScore}");
+            }
+        }
+    }
+
+    public void SortByPerformance()
+    {
+        var sorted = students
+            .OrderByDescending(x => x.Value.Average(c => c.CurrentScore));
+
+        foreach (var item in sorted)
+        {
+            double average = item.Value.Count > 0
+                ? item.Value.Average(c => c.CurrentScore)
+                : 0;
+
+            Console.WriteLine($"{item.Key.FullName} | Average score: {average:F1}");
+        }
     }
 }
 
@@ -131,20 +140,48 @@ class Program
 {
     static void Main()
     {
-        FootballTeam team = new FootballTeam();
+        EducationSystem system = new EducationSystem();
 
-        team.AddPlayer(new Player("Messi", 10, "Forward"));
-        team.AddPlayer(new Player("Ronaldo", 7, "Forward"));
-        team.AddPlayer(new Player("Neuer", 1, "Goalkeeper"));
+        system.AddOrUpdateStudent(
+            new Student(1, "Ivan Petrenko", "IPZ-21"));
 
-        Console.WriteLine("Football team composition:");
+        system.AddOrUpdateStudent(
+            new Student(2, "Maria Koval", "IPZ-22"));
 
-        foreach (var player in team)
-        {
-            player.ShowInfo();
-        }
+        system.AddOrUpdateCourse(
+            1,
+            new CourseProgress(
+                "C# Programming",
+                92,
+                12,
+                "Collections"));
+
+        system.AddOrUpdateCourse(
+            1,
+            new CourseProgress(
+                "Database Systems",
+                85,
+                8,
+                "SQL JOIN"));
+
+        system.AddOrUpdateCourse(
+            2,
+            new CourseProgress(
+                "C# Programming",
+                78,
+                9,
+                "LINQ"));
+
+        Console.WriteLine("group of students IPZ-21:");
+        system.FindByGroup("IPZ-21");
+
+        Console.WriteLine("\nStudents with a score of 80:");
+        system.FindByScore(80);
+
+        Console.WriteLine("\nCourse progress C# Programming:");
+        system.FindByCourseStatus("C# Programming");
+
+        Console.WriteLine("\nSort by success:");
+        system.SortByPerformance();
     }
 }
-
-
-        
