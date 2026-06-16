@@ -1,130 +1,96 @@
 ﻿//Task 1
+
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+
+//class Program
+//{
+//    static void Main()
+//    {
+//        string[] a = { "Ukraine", "Poland", "Germany", "France" };
+//        string[] b = { "Germany", "Italy", "France", "Spain" };
+
+//        // 1. Різниця A \ B
+//        var difference = a.Where(x => !b.Contains(x)).ToArray();
+
+//        // 2. Перетин
+//        var intersection = a.Where(x => b.Contains(x)).ToArray();
+
+//        // 3. Об'єднання без дублікатів
+//        var union = a.Union(b).ToArray();
+
+//        // 4. Перший масив без повторень
+//        var uniqueA = a.Distinct().ToArray();
+
+//        Console.WriteLine("Difference (A \\ B): " + string.Join(", ", difference));
+//        Console.WriteLine("Intersection: " + string.Join(", ", intersection));
+//        Console.WriteLine("Union: " + string.Join(", ", union));
+//        Console.WriteLine("Unique A: " + string.Join(", ", uniqueA));
+//    }
+//}
+
+//Task 2
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-class Firm
+class Device
 {
     public string Name { get; set; }
-    public DateTime Founded { get; set; }
-    public string BusinessProfile { get; set; }
-    public string DirectorFullName { get; set; }
-    public int Employees { get; set; }
-    public string Address { get; set; }
+    public string Manufacturer { get; set; }
+    public double Price { get; set; }
+
+    public Device(string name, string manufacturer, double price)
+    {
+        Name = name;
+        Manufacturer = manufacturer;
+        Price = price;
+    }
 
     public override string ToString()
     {
-        return $"{Name}, {BusinessProfile}, Director: {DirectorFullName}, " +
-               $"Employees: {Employees}, Address: {Address}, Founded: {Founded:d}";
+        return $"{Name} | {Manufacturer} | {Price}";
     }
 }
 
 class Program
 {
-    static void Print(string title, IEnumerable<Firm> firms)
-    {
-        Console.WriteLine($"\n=== {title} ===");
-
-        foreach (var firm in firms)
-            Console.WriteLine(firm);
-    }
-
     static void Main()
     {
-        List<Firm> firms = new List<Firm>
+        List<Device> a = new List<Device>
         {
-            new Firm
-            {
-                Name = "White Food Group",
-                Founded = DateTime.Today.AddYears(-3),
-                BusinessProfile = "Marketing",
-                DirectorFullName = "John Black",
-                Employees = 250,
-                Address = "London"
-            },
-
-            new Firm
-            {
-                Name = "Tech Solutions",
-                Founded = DateTime.Today.AddYears(-1),
-                BusinessProfile = "IT",
-                DirectorFullName = "Michael White",
-                Employees = 500,
-                Address = "New York"
-            },
-
-            new Firm
-            {
-                Name = "Food Market",
-                Founded = DateTime.Today.AddDays(-123),
-                BusinessProfile = "Marketing",
-                DirectorFullName = "David Brown",
-                Employees = 120,
-                Address = "London"
-            },
-
-            new Firm
-            {
-                Name = "IT Future",
-                Founded = DateTime.Today.AddYears(-5),
-                BusinessProfile = "IT",
-                DirectorFullName = "Sarah White",
-                Employees = 90,
-                Address = "Berlin"
-            }
+            new Device("Phone A", "Apple", 1000),
+            new Device("Phone B", "Samsung", 800),
+            new Device("Tablet A", "Lenovo", 500),
         };
 
-        // 1
-        Print("All companies", firms);
+        List<Device> b = new List<Device>
+        {
+            new Device("Phone C", "Samsung", 900),
+            new Device("Laptop A", "HP", 1200),
+            new Device("Tablet B", "Apple", 700),
+        };
 
-        // 2
-        Print("The name contains Food",
-            firms.Where(f => f.Name.Contains("Food")));
+        // 1. Різниця (A \ B) — виробники, яких нема в B
+        var diff = a.Where(x => !b.Any(y => y.Manufacturer == x.Manufacturer));
 
-        // 3
-        Print("Marketing industry",
-            firms.Where(f => f.BusinessProfile == "Marketing"));
+        // 2. Перетин — спільні виробники
+        var intersection = a.Where(x => b.Any(y => y.Manufacturer == x.Manufacturer));
 
-        // 4
-        Print("Marketing or IT industry",
-            firms.Where(f =>
-                f.BusinessProfile == "Marketing" ||
-                f.BusinessProfile == "IT"));
+        // 3. Об'єднання без дублікатів (по виробнику)
+        var union = a.Concat(b)
+                     .GroupBy(x => x.Manufacturer)
+                     .Select(g => g.First());
 
-        // 5
-        Print("More than 100 employees",
-            firms.Where(f => f.Employees > 100));
+        Console.WriteLine("DIFFERENCE:");
+        foreach (var d in diff) Console.WriteLine(d);
 
-        // 6
-        Print("Employees from 100 to 300",
-            firms.Where(f =>
-                f.Employees >= 100 &&
-                f.Employees <= 300));
+        Console.WriteLine("\nINTERSECTION:");
+        foreach (var d in intersection) Console.WriteLine(d);
 
-        // 7
-        Print("Located in London",
-            firms.Where(f =>
-                f.Address.Contains("London")));
-
-        // 8
-        Print("Director's last name White",
-            firms.Where(f =>
-                f.DirectorFullName.Split(' ').Last() == "White"));
-
-        // 9
-        Print("Founded more than two years ago",
-            firms.Where(f =>
-                f.Founded <= DateTime.Today.AddYears(-2)));
-
-        // 10
-        Print("Exactly 123 days have passed since the foundation",
-            firms.Where(f =>
-                (DateTime.Today - f.Founded.Date).Days == 123));
-
-        // 11
-        Print("Director Black and title contains White",
-            firms.Where(f =>
-                f.DirectorFullName.Split(' ').Last() == "Black" &&
-                f.Name.Contains("White")));
+        Console.WriteLine("\nUNION:");
+        foreach (var d in union) Console.WriteLine(d);
     }
 }
