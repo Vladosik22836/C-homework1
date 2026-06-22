@@ -1,186 +1,99 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
+using Serilog;
 
-namespace MagazineSerialization
+namespace FakeUserGeneratorApp
 {
-    // Task 2
-    public class Article
+    // ================================
+    // USER MODEL
+    // ================================
+    public class User
     {
-        public string Title { get; set; }
-        public int CharacterCount { get; set; }
-        public string Preview { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public string Address { get; set; }
     }
 
-    public class Magazine
+    // ================================
+    // FAKE USER GENERATOR CLASS
+    // ================================
+    public class FakeUserGenerator
     {
-        public string Title { get; set; }
-        public string Publisher { get; set; }
-        public DateTime ReleaseDate { get; set; }
-        public int Pages { get; set; }
+        private Random _random = new Random();
 
-        public List<Article> Articles { get; set; } = new List<Article>();
+        private string[] firstNames = { "John", "Alex", "Michael", "David", "Chris", "Anna", "Maria", "Olivia" };
+        private string[] lastNames = { "Smith", "Brown", "Johnson", "Williams", "Taylor", "Davis", "Wilson" };
+        private string[] cities = { "Kyiv", "Lviv", "Odesa", "Kharkiv", "Dnipro" };
+
+        public User GenerateUser()
+        {
+            var first = firstNames[_random.Next(firstNames.Length)];
+            var last = lastNames[_random.Next(lastNames.Length)];
+
+            var user = new User
+            {
+                FirstName = first,
+                LastName = last,
+                Phone = GeneratePhone(),
+                Email = $"{first.ToLower()}.{last.ToLower()}@mail.com",
+                Address = $"{cities[_random.Next(cities.Length)]}, Ukraine"
+            };
+
+            return user;
+        }
+
+        private string GeneratePhone()
+        {
+            return $"+380{_random.Next(100000000, 999999999)}";
+        }
     }
 
+    // ================================
+    // PROGRAM (TESTING)
+    // ================================
     class Program
     {
         static void Main()
         {
-            Magazine magazine = null;
-            string fileName = "magazine.json";
+            // ================================
+            // SERILOG CONFIGURATION
+            // ================================
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("logs.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
 
-            while (true)
+            Log.Information("Application started");
+
+            var generator = new FakeUserGenerator();
+            var users = new List<User>();
+
+            Console.Write("How many fake users to generate? ");
+            int count = int.Parse(Console.ReadLine());
+
+            for (int i = 0; i < count; i++)
             {
-                Console.WriteLine("\n========== MENU ==========");
-                Console.WriteLine("1. Enter magazine information");
-                Console.WriteLine("2. Display magazine information");
-                Console.WriteLine("3. Save magazine to file");
-                Console.WriteLine("4. Load magazine from file");
-                Console.WriteLine("5. Exit");
-                Console.WriteLine("==========================");
+                var user = generator.GenerateUser();
+                users.Add(user);
 
-                Console.Write("Your choice: ");
-                string choice = Console.ReadLine();
-
-                switch (choice)
-                {
-                    case "1":
-                        magazine = InputMagazine();
-                        break;
-
-                    case "2":
-                        DisplayMagazine(magazine);
-                        break;
-
-                    case "3":
-                        SaveMagazine(magazine, fileName);
-                        break;
-
-                    case "4":
-                        magazine = LoadMagazine(fileName);
-                        break;
-
-                    case "5":
-                        return;
-
-                    default:
-                        Console.WriteLine("Invalid choice!");
-                        break;
-                }
-            }
-        }
-
-        static Magazine InputMagazine()
-        {
-            Magazine magazine = new Magazine();
-
-            Console.Write("Magazine title: ");
-            magazine.Title = Console.ReadLine();
-
-            Console.Write("Publisher: ");
-            magazine.Publisher = Console.ReadLine();
-
-            Console.Write("Release date (yyyy-mm-dd): ");
-            magazine.ReleaseDate = DateTime.Parse(Console.ReadLine());
-
-            Console.Write("Number of pages: ");
-            magazine.Pages = int.Parse(Console.ReadLine());
-
-            Console.Write("How many articles does the magazine contain? ");
-            int articleCount = int.Parse(Console.ReadLine());
-
-            for (int i = 0; i < articleCount; i++)
-            {
-                Console.WriteLine($"\n--- Article #{i + 1} ---");
-
-                Article article = new Article();
-
-                Console.Write("Article title: ");
-                article.Title = Console.ReadLine();
-
-                Console.Write("Character count: ");
-                article.CharacterCount = int.Parse(Console.ReadLine());
-
-                Console.Write("Article preview: ");
-                article.Preview = Console.ReadLine();
-
-                magazine.Articles.Add(article);
+                Log.Information("Generated user: {First} {Last}, {Email}",
+                    user.FirstName, user.LastName, user.Email);
             }
 
-            return magazine;
-        }
+            Console.WriteLine("\n=== GENERATED USERS ===");
 
-        static void DisplayMagazine(Magazine magazine)
-        {
-            if (magazine == null)
+            foreach (var user in users)
             {
-                Console.WriteLine("No data available.");
-                return;
+                Console.WriteLine($"\nName: {user.FirstName} {user.LastName}");
+                Console.WriteLine($"Phone: {user.Phone}");
+                Console.WriteLine($"Email: {user.Email}");
+                Console.WriteLine($"Address: {user.Address}");
             }
 
-            Console.WriteLine("\n========== MAGAZINE ==========");
-            Console.WriteLine($"Title: {magazine.Title}");
-            Console.WriteLine($"Publisher: {magazine.Publisher}");
-            Console.WriteLine($"Release Date: {magazine.ReleaseDate:dd.MM.yyyy}");
-            Console.WriteLine($"Pages: {magazine.Pages}");
-
-            Console.WriteLine("\nArticles:");
-
-            if (magazine.Articles.Count == 0)
-            {
-                Console.WriteLine("No articles available.");
-            }
-            else
-            {
-                for (int i = 0; i < magazine.Articles.Count; i++)
-                {
-                    Console.WriteLine($"\nArticle #{i + 1}");
-                    Console.WriteLine($"Title: {magazine.Articles[i].Title}");
-                    Console.WriteLine($"Character Count: {magazine.Articles[i].CharacterCount}");
-                    Console.WriteLine($"Preview: {magazine.Articles[i].Preview}");
-                }
-            }
-
-            Console.WriteLine("==============================");
-        }
-
-        static void SaveMagazine(Magazine magazine, string fileName)
-        {
-            if (magazine == null)
-            {
-                Console.WriteLine("No data to save.");
-                return;
-            }
-
-            string json = JsonSerializer.Serialize(
-                magazine,
-                new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-
-            File.WriteAllText(fileName, json);
-
-            Console.WriteLine("Magazine successfully saved.");
-        }
-
-        static Magazine LoadMagazine(string fileName)
-        {
-            if (!File.Exists(fileName))
-            {
-                Console.WriteLine("File not found.");
-                return null;
-            }
-
-            string json = File.ReadAllText(fileName);
-
-            Magazine magazine =
-                JsonSerializer.Deserialize<Magazine>(json);
-
-            Console.WriteLine("Magazine successfully loaded.");
-
-            return magazine;
+            Log.Information("Application finished");
+            Log.CloseAndFlush();
         }
     }
 }
