@@ -1,96 +1,186 @@
-﻿//Task 1
-
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-
-//class Program
-//{
-//    static void Main()
-//    {
-//        string[] a = { "Ukraine", "Poland", "Germany", "France" };
-//        string[] b = { "Germany", "Italy", "France", "Spain" };
-
-//        // 1. Різниця A \ B
-//        var difference = a.Where(x => !b.Contains(x)).ToArray();
-
-//        // 2. Перетин
-//        var intersection = a.Where(x => b.Contains(x)).ToArray();
-
-//        // 3. Об'єднання без дублікатів
-//        var union = a.Union(b).ToArray();
-
-//        // 4. Перший масив без повторень
-//        var uniqueA = a.Distinct().ToArray();
-
-//        Console.WriteLine("Difference (A \\ B): " + string.Join(", ", difference));
-//        Console.WriteLine("Intersection: " + string.Join(", ", intersection));
-//        Console.WriteLine("Union: " + string.Join(", ", union));
-//        Console.WriteLine("Unique A: " + string.Join(", ", uniqueA));
-//    }
-//}
-
-//Task 2
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Text.Json;
 
-class Device
+namespace MagazineSerialization
 {
-    public string Name { get; set; }
-    public string Manufacturer { get; set; }
-    public double Price { get; set; }
-
-    public Device(string name, string manufacturer, double price)
+    // Task 2
+    public class Article
     {
-        Name = name;
-        Manufacturer = manufacturer;
-        Price = price;
+        public string Title { get; set; }
+        public int CharacterCount { get; set; }
+        public string Preview { get; set; }
     }
 
-    public override string ToString()
+    public class Magazine
     {
-        return $"{Name} | {Manufacturer} | {Price}";
+        public string Title { get; set; }
+        public string Publisher { get; set; }
+        public DateTime ReleaseDate { get; set; }
+        public int Pages { get; set; }
+
+        public List<Article> Articles { get; set; } = new List<Article>();
     }
-}
 
-class Program
-{
-    static void Main()
+    class Program
     {
-        List<Device> a = new List<Device>
+        static void Main()
         {
-            new Device("Phone A", "Apple", 1000),
-            new Device("Phone B", "Samsung", 800),
-            new Device("Tablet A", "Lenovo", 500),
-        };
+            Magazine magazine = null;
+            string fileName = "magazine.json";
 
-        List<Device> b = new List<Device>
+            while (true)
+            {
+                Console.WriteLine("\n========== MENU ==========");
+                Console.WriteLine("1. Enter magazine information");
+                Console.WriteLine("2. Display magazine information");
+                Console.WriteLine("3. Save magazine to file");
+                Console.WriteLine("4. Load magazine from file");
+                Console.WriteLine("5. Exit");
+                Console.WriteLine("==========================");
+
+                Console.Write("Your choice: ");
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        magazine = InputMagazine();
+                        break;
+
+                    case "2":
+                        DisplayMagazine(magazine);
+                        break;
+
+                    case "3":
+                        SaveMagazine(magazine, fileName);
+                        break;
+
+                    case "4":
+                        magazine = LoadMagazine(fileName);
+                        break;
+
+                    case "5":
+                        return;
+
+                    default:
+                        Console.WriteLine("Invalid choice!");
+                        break;
+                }
+            }
+        }
+
+        static Magazine InputMagazine()
         {
-            new Device("Phone C", "Samsung", 900),
-            new Device("Laptop A", "HP", 1200),
-            new Device("Tablet B", "Apple", 700),
-        };
+            Magazine magazine = new Magazine();
 
-        // 1. Різниця (A \ B) — виробники, яких нема в B
-        var diff = a.Where(x => !b.Any(y => y.Manufacturer == x.Manufacturer));
+            Console.Write("Magazine title: ");
+            magazine.Title = Console.ReadLine();
 
-        // 2. Перетин — спільні виробники
-        var intersection = a.Where(x => b.Any(y => y.Manufacturer == x.Manufacturer));
+            Console.Write("Publisher: ");
+            magazine.Publisher = Console.ReadLine();
 
-        // 3. Об'єднання без дублікатів (по виробнику)
-        var union = a.Concat(b)
-                     .GroupBy(x => x.Manufacturer)
-                     .Select(g => g.First());
+            Console.Write("Release date (yyyy-mm-dd): ");
+            magazine.ReleaseDate = DateTime.Parse(Console.ReadLine());
 
-        Console.WriteLine("DIFFERENCE:");
-        foreach (var d in diff) Console.WriteLine(d);
+            Console.Write("Number of pages: ");
+            magazine.Pages = int.Parse(Console.ReadLine());
 
-        Console.WriteLine("\nINTERSECTION:");
-        foreach (var d in intersection) Console.WriteLine(d);
+            Console.Write("How many articles does the magazine contain? ");
+            int articleCount = int.Parse(Console.ReadLine());
 
-        Console.WriteLine("\nUNION:");
-        foreach (var d in union) Console.WriteLine(d);
+            for (int i = 0; i < articleCount; i++)
+            {
+                Console.WriteLine($"\n--- Article #{i + 1} ---");
+
+                Article article = new Article();
+
+                Console.Write("Article title: ");
+                article.Title = Console.ReadLine();
+
+                Console.Write("Character count: ");
+                article.CharacterCount = int.Parse(Console.ReadLine());
+
+                Console.Write("Article preview: ");
+                article.Preview = Console.ReadLine();
+
+                magazine.Articles.Add(article);
+            }
+
+            return magazine;
+        }
+
+        static void DisplayMagazine(Magazine magazine)
+        {
+            if (magazine == null)
+            {
+                Console.WriteLine("No data available.");
+                return;
+            }
+
+            Console.WriteLine("\n========== MAGAZINE ==========");
+            Console.WriteLine($"Title: {magazine.Title}");
+            Console.WriteLine($"Publisher: {magazine.Publisher}");
+            Console.WriteLine($"Release Date: {magazine.ReleaseDate:dd.MM.yyyy}");
+            Console.WriteLine($"Pages: {magazine.Pages}");
+
+            Console.WriteLine("\nArticles:");
+
+            if (magazine.Articles.Count == 0)
+            {
+                Console.WriteLine("No articles available.");
+            }
+            else
+            {
+                for (int i = 0; i < magazine.Articles.Count; i++)
+                {
+                    Console.WriteLine($"\nArticle #{i + 1}");
+                    Console.WriteLine($"Title: {magazine.Articles[i].Title}");
+                    Console.WriteLine($"Character Count: {magazine.Articles[i].CharacterCount}");
+                    Console.WriteLine($"Preview: {magazine.Articles[i].Preview}");
+                }
+            }
+
+            Console.WriteLine("==============================");
+        }
+
+        static void SaveMagazine(Magazine magazine, string fileName)
+        {
+            if (magazine == null)
+            {
+                Console.WriteLine("No data to save.");
+                return;
+            }
+
+            string json = JsonSerializer.Serialize(
+                magazine,
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+            File.WriteAllText(fileName, json);
+
+            Console.WriteLine("Magazine successfully saved.");
+        }
+
+        static Magazine LoadMagazine(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                Console.WriteLine("File not found.");
+                return null;
+            }
+
+            string json = File.ReadAllText(fileName);
+
+            Magazine magazine =
+                JsonSerializer.Deserialize<Magazine>(json);
+
+            Console.WriteLine("Magazine successfully loaded.");
+
+            return magazine;
+        }
     }
 }
